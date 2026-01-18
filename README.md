@@ -39,6 +39,17 @@ Top/Bottom Ratio: 2.30x
 
 ## Installation
 
+**Quick install with pipx (recommended):**
+```bash
+pipx install git+https://github.com/knix24/sleeper-gini.git
+```
+
+**Or with pip:**
+```bash
+pip install git+https://github.com/knix24/sleeper-gini.git
+```
+
+**For development:**
 ```bash
 git clone https://github.com/knix24/sleeper-gini.git
 cd sleeper-gini
