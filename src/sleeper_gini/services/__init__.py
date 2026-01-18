@@ -1,7 +1,7 @@
 """Business logic services."""
 
 from .cache import Cache
-from .gini import Stats, calculate_gini, interpret_gini
+from .gini import calculate_gini, calculate_stats, interpret_gini
 from .matcher import PlayerMatcher
 
-__all__ = ["Cache", "Stats", "calculate_gini", "interpret_gini", "PlayerMatcher"]
+__all__ = ["Cache", "calculate_gini", "calculate_stats", "interpret_gini", "PlayerMatcher"]

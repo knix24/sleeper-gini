@@ -54,7 +54,6 @@ class SleeperRoster(BaseModel):
     roster_id: int
     owner_id: str | None = None
     players: list[str] | None = None
-    starters: list[str] | None = None
 
 
 class SleeperLeague(BaseModel):
@@ -64,4 +63,3 @@ class SleeperLeague(BaseModel):
     name: str
     season: str
     total_rosters: int
-    roster_positions: list[str] | None = None
