@@ -5,6 +5,7 @@ import sys
 
 import click
 from rich.console import Console
+from rich.prompt import Prompt
 from rich.table import Table
 
 from .api.fantasycalc import FantasyCalcClient
@@ -13,6 +14,65 @@ from .models import LeagueBalance, Player, ValuedRoster
 from .services.cache import Cache
 from .services.gini import calculate_gini, calculate_stats, interpret_gini
 from .services.matcher import PlayerMatcher
+
+
+def select_league(console: Console) -> tuple[str, int]:
+    """Interactively select a league by prompting for username.
+
+    Returns:
+        Tuple of (league_id, total_rosters)
+    """
+    username = Prompt.ask("[cyan]Enter your Sleeper username[/cyan]")
+
+    with SleeperClient() as sleeper:
+        with console.status(f"Looking up user '{username}'..."):
+            try:
+                user = sleeper.get_user(username)
+            except Exception:
+                console.print(f"[red]User '{username}' not found[/red]")
+                sys.exit(1)
+
+        with console.status("Fetching leagues..."):
+            leagues = sleeper.get_user_leagues(user.user_id)
+
+    if not leagues:
+        console.print(f"[yellow]No leagues found for {username} in 2024[/yellow]")
+        sys.exit(1)
+
+    console.print()
+    console.print(f"[bold]Leagues for {user.name}:[/bold]")
+    console.print()
+
+    table = Table(show_header=True, header_style="bold")
+    table.add_column("#", style="cyan", width=3)
+    table.add_column("League Name", min_width=30)
+    table.add_column("Teams", justify="center", width=6)
+    table.add_column("Season", justify="center", width=6)
+
+    for i, league in enumerate(leagues, 1):
+        table.add_row(
+            str(i),
+            league.name,
+            str(league.total_rosters),
+            league.season,
+        )
+
+    console.print(table)
+    console.print()
+
+    while True:
+        choice = Prompt.ask(
+            "[cyan]Select a league[/cyan]",
+            default="1",
+        )
+        try:
+            idx = int(choice) - 1
+            if 0 <= idx < len(leagues):
+                selected = leagues[idx]
+                return selected.league_id, selected.total_rosters
+            console.print(f"[red]Please enter a number between 1 and {len(leagues)}[/red]")
+        except ValueError:
+            console.print("[red]Please enter a valid number[/red]")
 
 
 def analyze_league(
@@ -35,15 +95,12 @@ def analyze_league(
     cache = Cache()
 
     with SleeperClient() as sleeper, FantasyCalcClient(cache=cache) as fantasycalc:
-        # Fetch data from both APIs
         league = sleeper.get_league(league_id)
         rosters = sleeper.get_rosters(league_id)
         users = sleeper.get_users(league_id)
 
-        # Build user lookup
         user_map = {u.user_id: u for u in users}
 
-        # Get FantasyCalc values
         fc_values = fantasycalc.get_values(
             is_dynasty=True,
             num_qbs=num_qbs,
@@ -51,11 +108,9 @@ def analyze_league(
             ppr=ppr,
         )
 
-        # Build player matcher
         matcher = PlayerMatcher()
         matcher.build_lookup(fc_values)
 
-        # Calculate roster values
         valued_rosters: list[ValuedRoster] = []
 
         for roster in rosters:
@@ -79,10 +134,8 @@ def analyze_league(
                 )
             )
 
-        # Sort rosters by value (highest first)
         valued_rosters.sort(key=lambda r: r.total_value, reverse=True)
 
-        # Calculate Gini and stats
         values = [r.total_value for r in valued_rosters]
         gini = calculate_gini(values)
         stats = calculate_stats(values)
@@ -109,7 +162,6 @@ def print_report(result: LeagueBalance, console: Console) -> None:
     )
     console.print()
 
-    # Roster table
     table = Table(show_header=True, header_style="bold")
     table.add_column("Rank", style="dim", width=4)
     table.add_column("Owner", min_width=15)
@@ -126,7 +178,6 @@ def print_report(result: LeagueBalance, console: Console) -> None:
         else:
             diff_str = f"[red]{diff:,.0f}[/red]"
 
-        # Visual bar
         bar_width = int((roster.total_value / max_value) * 20)
         bar = "[cyan]" + "█" * bar_width + "░" * (20 - bar_width) + "[/cyan]"
 
@@ -147,7 +198,7 @@ def print_report(result: LeagueBalance, console: Console) -> None:
 
 
 @click.command()
-@click.argument("league_id")
+@click.argument("league_id", required=False)
 @click.option(
     "--superflex",
     is_flag=True,
@@ -161,9 +212,9 @@ def print_report(result: LeagueBalance, console: Console) -> None:
 )
 @click.option(
     "--teams",
-    default=12,
+    default=None,
     type=int,
-    help="League size for valuation context (default: 12)",
+    help="League size for valuation context (auto-detected if not specified)",
 )
 @click.option(
     "--ppr",
@@ -172,20 +223,32 @@ def print_report(result: LeagueBalance, console: Console) -> None:
     help="PPR scoring: 0, 0.5, or 1 (default: 1)",
 )
 def main(
-    league_id: str,
+    league_id: str | None,
     superflex: bool,
     as_json: bool,
-    teams: int,
+    teams: int | None,
     ppr: float,
 ) -> None:
     """Analyze competitive balance for a Sleeper dynasty league.
 
-    LEAGUE_ID is the Sleeper league ID (found in the league URL).
+    If LEAGUE_ID is not provided, prompts for your Sleeper username
+    and lets you select from your leagues.
     """
     console = Console(stderr=True)
 
     try:
-        with console.status("Fetching league data..."):
+        # Interactive mode if no league_id provided
+        if not league_id:
+            league_id, detected_teams = select_league(console)
+            if teams is None:
+                teams = detected_teams
+            console.print()
+
+        # Default to 12 teams if still not set
+        if teams is None:
+            teams = 12
+
+        with console.status("Analyzing league..."):
             result = analyze_league(
                 league_id=league_id,
                 num_qbs=2 if superflex else 1,
@@ -194,7 +257,6 @@ def main(
             )
 
         if as_json:
-            # Output JSON to stdout for piping
             print(json.dumps(result.model_dump(), indent=2))
         else:
             print_report(result, Console())

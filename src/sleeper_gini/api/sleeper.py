@@ -45,3 +45,33 @@ class SleeperClient:
         resp = self.client.get("/players/nfl")
         resp.raise_for_status()
         return resp.json()
+
+    def get_user(self, username: str) -> SleeperUser:
+        """Fetch user by username.
+
+        Args:
+            username: Sleeper username
+
+        Returns:
+            SleeperUser with user_id and display info
+        """
+        resp = self.client.get(f"/user/{username}")
+        resp.raise_for_status()
+        return SleeperUser(**resp.json())
+
+    def get_user_leagues(
+        self, user_id: str, sport: str = "nfl", season: str = "2024"
+    ) -> list[SleeperLeague]:
+        """Fetch all leagues for a user.
+
+        Args:
+            user_id: Sleeper user ID
+            sport: Sport type (default: nfl)
+            season: Season year (default: 2024)
+
+        Returns:
+            List of leagues the user is in
+        """
+        resp = self.client.get(f"/user/{user_id}/leagues/{sport}/{season}")
+        resp.raise_for_status()
+        return [SleeperLeague(**lg) for lg in resp.json()]

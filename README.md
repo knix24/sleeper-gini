@@ -7,7 +7,19 @@ Analyze competitive balance in Sleeper dynasty fantasy football leagues using th
 Pulls roster data from Sleeper and player trade values from FantasyCalc to measure how evenly "wealth" (roster value) is distributed across your league.
 
 ```
-$ sleeper-gini 123456789012345678
+$ sleeper-gini
+Enter your Sleeper username: fantasy_guru
+
+Leagues for fantasy_guru:
+
+┏━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━┓
+┃ # ┃ League Name                    ┃ Teams  ┃ Season ┃
+┡━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━┩
+│ 1 │ Dynasty Bros League            │ 12     │ 2024   │
+│ 2 │ Work League                    │ 10     │ 2024   │
+└───┴────────────────────────────────┴────────┴────────┘
+
+Select a league [1]: 1
 
 Dynasty Bros League
 Gini Coefficient: 0.284 (Healthy)
@@ -38,17 +50,20 @@ pip install -e .
 ## Usage
 
 ```bash
-# Basic usage (find league ID in your Sleeper league URL)
+# Interactive mode - prompts for username and league selection
+sleeper-gini
+
+# Direct mode - specify league ID directly
 sleeper-gini <league_id>
 
 # Superflex league
-sleeper-gini <league_id> --superflex
+sleeper-gini --superflex
 
 # JSON output (for piping to other tools)
-sleeper-gini <league_id> --json
+sleeper-gini --json
 
-# Custom league settings
-sleeper-gini <league_id> --teams 14 --ppr 0.5
+# Custom scoring settings
+sleeper-gini --ppr 0.5
 ```
 
 ## Gini Coefficient Interpretation
