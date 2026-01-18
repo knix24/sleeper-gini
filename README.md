@@ -49,32 +49,31 @@ pipx install git+https://github.com/knix24/sleeper-gini.git
 pip install git+https://github.com/knix24/sleeper-gini.git
 ```
 
-**For development:**
+**Run from repo:**
 ```bash
 git clone https://github.com/knix24/sleeper-gini.git
 cd sleeper-gini
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
+python3 -m venv .venv && .venv/bin/pip install -e .
+./sleeper-gini
 ```
 
 ## Usage
 
 ```bash
 # Interactive mode - prompts for username and league selection
-sleeper-gini
+./sleeper-gini
 
 # Direct mode - specify league ID directly
-sleeper-gini <league_id>
+./sleeper-gini <league_id>
 
 # Superflex league
-sleeper-gini --superflex
+./sleeper-gini --superflex
 
 # JSON output (for piping to other tools)
-sleeper-gini --json
+./sleeper-gini --json
 
 # Custom scoring settings
-sleeper-gini --ppr 0.5
+./sleeper-gini --ppr 0.5
 ```
 
 ## Gini Coefficient Interpretation
