@@ -36,7 +36,7 @@ def select_league(console: Console) -> tuple[str, int]:
             leagues = sleeper.get_user_leagues(user.user_id)
 
     if not leagues:
-        console.print(f"[yellow]No leagues found for {username} in 2024[/yellow]")
+        console.print(f"[yellow]No leagues found for {username}[/yellow]")
         sys.exit(1)
 
     console.print()

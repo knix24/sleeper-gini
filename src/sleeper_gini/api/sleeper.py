@@ -37,15 +37,6 @@ class SleeperClient:
         resp.raise_for_status()
         return [SleeperUser(**u) for u in resp.json()]
 
-    def get_players(self) -> dict[str, dict]:
-        """Fetch all NFL players. Returns dict keyed by player ID.
-
-        Note: This is a large response (~5MB). Should be cached.
-        """
-        resp = self.client.get("/players/nfl")
-        resp.raise_for_status()
-        return resp.json()
-
     def get_user(self, username: str) -> SleeperUser:
         """Fetch user by username.
 

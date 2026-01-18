@@ -15,8 +15,8 @@ Leagues for fantasy_guru:
 ┏━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━┓
 ┃ # ┃ League Name                    ┃ Teams  ┃ Season ┃
 ┡━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━┩
-│ 1 │ Dynasty Bros League            │ 12     │ 2024   │
-│ 2 │ Work League                    │ 10     │ 2024   │
+│ 1 │ Dynasty Bros League            │ 12     │ 2025   │
+│ 2 │ Work League                    │ 10     │ 2025   │
 └───┴────────────────────────────────┴────────┴────────┘
 
 Select a league [1]: 1
