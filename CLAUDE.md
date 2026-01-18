@@ -14,12 +14,16 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
 
-# Run
-sleeper-gini <league_id>              # Pretty table output
-sleeper-gini <league_id> --json       # JSON output
-sleeper-gini <league_id> --superflex  # Use superflex values
-sleeper-gini <league_id> --teams 14   # Specify league size
-sleeper-gini <league_id> --ppr 0.5    # Specify PPR scoring
+# Interactive mode - prompts for username and league selection
+sleeper-gini
+
+# Direct mode - specify league ID
+sleeper-gini <league_id>
+
+# Options (work with both modes)
+sleeper-gini --json                   # JSON output
+sleeper-gini --superflex              # Use superflex values
+sleeper-gini --ppr 0.5                # Specify PPR scoring
 ```
 
 ## Architecture
@@ -51,6 +55,8 @@ src/sleeper_gini/
 
 ## Key Design Decisions
 
+- Interactive mode prompts for username, fetches user's leagues, and lets them select one
+- League size is auto-detected from selection in interactive mode
 - Player matching uses FantasyCalc's `sleeperId` field when available, falls back to name+position matching
 - Gini thresholds: <0.15 Highly Competitive, <0.25 Healthy, <0.35 Imbalanced, ≥0.35 Severely Lopsided
 - CLI outputs to stderr for status, stdout for results (enables clean JSON piping)
