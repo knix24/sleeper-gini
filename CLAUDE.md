@@ -11,6 +11,7 @@ sleeper-gini analyzes competitive balance in Sleeper dynasty fantasy football le
 ```bash
 # Setup
 python3 -m venv .venv && .venv/bin/pip install -e .
+source .venv/bin/activate
 
 # Run from repo
 ./sleeper-gini                        # Interactive mode

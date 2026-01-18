@@ -54,6 +54,7 @@ pip install git+https://github.com/knix24/sleeper-gini.git
 git clone https://github.com/knix24/sleeper-gini.git
 cd sleeper-gini
 python3 -m venv .venv && .venv/bin/pip install -e .
+source .venv/bin/activate
 ./sleeper-gini
 ```
 
