@@ -7,22 +7,22 @@ Analyze competitive balance in Sleeper dynasty fantasy football leagues using th
 Pulls roster data from Sleeper and player trade values from FantasyCalc to measure how evenly "wealth" (roster value) is distributed across your league.
 
 ```
-$ sleeper-gini 1124834453848334336
+$ sleeper-gini 123456789012345678
 
-NFFL 30th ANNIVERSARY SZN
-Gini Coefficient: 0.115 (Highly Competitive)
+Dynasty Bros League
+Gini Coefficient: 0.284 (Healthy)
 
 ┏━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Rank ┃ Owner           ┃    Value ┃   vs Avg ┃ Bar                  ┃
 ┡━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
-│ 1    │ godfatheriii    │   42,101 │  +11,326 │ ████████████████████ │
-│ 2    │ spaliwal        │   37,796 │   +7,021 │ █████████████████░░░ │
-│ 3    │ lombardifish    │   36,984 │   +6,209 │ █████████████████░░░ │
+│ 1    │ gridiron_king   │   42,800 │  +10,967 │ ████████████████████ │
+│ 2    │ touchdown_tom   │   36,200 │   +4,367 │ █████████████████░░░ │
+│ 3    │ fantasy_guru    │   33,100 │   +1,267 │ ████████████████░░░░ │
 │ ...  │                 │          │          │                      │
 └──────┴─────────────────┴──────────┴──────────┴──────────────────────┘
 
-Average Value: 30,775
-Top/Bottom Ratio: 2.03x
+Average Value: 31,833
+Top/Bottom Ratio: 2.30x
 ```
 
 ## Installation
