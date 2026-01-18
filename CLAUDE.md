@@ -10,20 +10,14 @@ sleeper-gini analyzes competitive balance in Sleeper dynasty fantasy football le
 
 ```bash
 # Setup
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -e .
+python3 -m venv .venv && .venv/bin/pip install -e .
 
-# Interactive mode - prompts for username and league selection
-sleeper-gini
-
-# Direct mode - specify league ID
-sleeper-gini <league_id>
-
-# Options (work with both modes)
-sleeper-gini --json                   # JSON output
-sleeper-gini --superflex              # Use superflex values
-sleeper-gini --ppr 0.5                # Specify PPR scoring
+# Run from repo
+./sleeper-gini                        # Interactive mode
+./sleeper-gini <league_id>            # Direct mode
+./sleeper-gini --json                 # JSON output
+./sleeper-gini --superflex            # Use superflex values
+./sleeper-gini --ppr 0.5              # Specify PPR scoring
 ```
 
 ## Architecture
@@ -56,7 +50,8 @@ src/sleeper_gini/
 ## Key Design Decisions
 
 - Interactive mode prompts for username, fetches user's leagues, and lets them select one
+- Season is auto-detected from Sleeper's NFL state endpoint
 - League size is auto-detected from selection in interactive mode
-- Player matching uses FantasyCalc's `sleeperId` field when available, falls back to name+position matching
+- Player matching uses FantasyCalc's `sleeperId` field
 - Gini thresholds: <0.15 Highly Competitive, <0.25 Healthy, <0.35 Imbalanced, ≥0.35 Severely Lopsided
 - CLI outputs to stderr for status, stdout for results (enables clean JSON piping)
