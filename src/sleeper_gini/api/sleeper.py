@@ -59,19 +59,33 @@ class SleeperClient:
         resp.raise_for_status()
         return SleeperUser(**resp.json())
 
+    def get_nfl_state(self) -> dict:
+        """Fetch current NFL state including season info.
+
+        Returns:
+            Dict with season, week, season_type, etc.
+        """
+        resp = self.client.get("/state/nfl")
+        resp.raise_for_status()
+        return resp.json()
+
     def get_user_leagues(
-        self, user_id: str, sport: str = "nfl", season: str = "2024"
+        self, user_id: str, sport: str = "nfl", season: str | None = None
     ) -> list[SleeperLeague]:
         """Fetch all leagues for a user.
 
         Args:
             user_id: Sleeper user ID
             sport: Sport type (default: nfl)
-            season: Season year (default: 2024)
+            season: Season year (default: current season from NFL state)
 
         Returns:
             List of leagues the user is in
         """
+        if season is None:
+            state = self.get_nfl_state()
+            season = str(state.get("season", "2024"))
+
         resp = self.client.get(f"/user/{user_id}/leagues/{sport}/{season}")
         resp.raise_for_status()
         return [SleeperLeague(**lg) for lg in resp.json()]
