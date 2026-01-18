@@ -52,7 +52,7 @@ def analyze_league(
         )
 
         # Build player matcher
-        matcher = PlayerMatcher(cache=cache)
+        matcher = PlayerMatcher()
         matcher.build_lookup(fc_values)
 
         # Calculate roster values
@@ -93,9 +93,9 @@ def analyze_league(
             gini_coefficient=round(gini, 4),
             interpretation=interpret_gini(gini),
             rosters=valued_rosters,
-            average_value=round(stats["average"], 2),
-            std_dev=round(stats["std_dev"], 2),
-            top_bottom_ratio=round(stats["top_bottom_ratio"], 2),
+            average_value=round(stats.average, 2),
+            std_dev=round(stats.std_dev, 2),
+            top_bottom_ratio=round(stats.top_bottom_ratio, 2),
         )
 
 

@@ -65,17 +65,3 @@ class SleeperLeague(BaseModel):
     season: str
     total_rosters: int
     roster_positions: list[str] | None = None
-
-
-class FantasyCalcPlayer(BaseModel):
-    """Player data from FantasyCalc API."""
-
-    sleeper_id: str | None = Field(None, alias="sleeperId")
-    name: str = ""
-    position: str = ""
-    team: str | None = Field(None, alias="maybeTeam")
-    value: int = 0
-    rank: int | None = Field(None, alias="overallRank")
-
-    class Config:
-        populate_by_name = True

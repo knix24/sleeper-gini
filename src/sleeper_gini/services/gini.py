@@ -1,6 +1,15 @@
 """Gini coefficient calculation for measuring inequality."""
 
 import statistics
+from typing import NamedTuple
+
+
+class Stats(NamedTuple):
+    """Statistical summary of roster values."""
+
+    average: float
+    std_dev: float
+    top_bottom_ratio: float
 
 
 def calculate_gini(values: list[int | float]) -> float:
@@ -53,17 +62,17 @@ def interpret_gini(gini: float) -> str:
         return "Severely Lopsided"
 
 
-def calculate_stats(values: list[int | float]) -> dict:
+def calculate_stats(values: list[int | float]) -> Stats:
     """Calculate additional statistics for the values.
 
     Args:
         values: List of numeric values
 
     Returns:
-        Dictionary with average, std_dev, and top_bottom_ratio
+        Stats with average, std_dev, and top_bottom_ratio
     """
     if not values:
-        return {"average": 0.0, "std_dev": 0.0, "top_bottom_ratio": 0.0}
+        return Stats(average=0.0, std_dev=0.0, top_bottom_ratio=0.0)
 
     sorted_values = sorted(values)
     avg = statistics.mean(values)
@@ -73,8 +82,4 @@ def calculate_stats(values: list[int | float]) -> dict:
     bottom = sorted_values[0] if sorted_values[0] > 0 else 1
     top_bottom = sorted_values[-1] / bottom
 
-    return {
-        "average": avg,
-        "std_dev": std,
-        "top_bottom_ratio": top_bottom,
-    }
+    return Stats(average=avg, std_dev=std, top_bottom_ratio=top_bottom)

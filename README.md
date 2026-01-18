@@ -28,7 +28,7 @@ Top/Bottom Ratio: 2.30x
 ## Installation
 
 ```bash
-git clone https://github.com/yourusername/sleeper-gini.git
+git clone https://github.com/knix24/sleeper-gini.git
 cd sleeper-gini
 python3 -m venv .venv
 source .venv/bin/activate

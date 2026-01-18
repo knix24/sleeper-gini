@@ -1,14 +1,12 @@
 """Player matching between Sleeper and FantasyCalc."""
 
 from ..models import Player
-from ..services.cache import Cache
 
 
 class PlayerMatcher:
     """Match players between Sleeper and FantasyCalc data sources."""
 
-    def __init__(self, cache: Cache | None = None):
-        self.cache = cache or Cache()
+    def __init__(self):
         self._sleeper_id_map: dict[str, dict] = {}
         self._name_map: dict[str, dict] = {}
 
@@ -102,16 +100,3 @@ class PlayerMatcher:
                 value=player_data["value"],
             )
         return None
-
-    def get_value(self, sleeper_id: str) -> int:
-        """Get just the value for a player, defaulting to 0.
-
-        Args:
-            sleeper_id: The player's Sleeper ID
-
-        Returns:
-            Player's value, or 0 if not found
-        """
-        if player_data := self._sleeper_id_map.get(sleeper_id):
-            return player_data["value"]
-        return 0
