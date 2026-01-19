@@ -63,3 +63,19 @@ class SleeperLeague(BaseModel):
     name: str
     season: str
     total_rosters: int
+    scoring_settings: dict | None = None
+    roster_positions: list[str] | None = None
+
+    @property
+    def ppr(self) -> float:
+        """Get PPR scoring value (0, 0.5, or 1)."""
+        if self.scoring_settings:
+            return float(self.scoring_settings.get("rec", 1.0))
+        return 1.0
+
+    @property
+    def is_superflex(self) -> bool:
+        """Check if league is superflex (has SUPER_FLEX position)."""
+        if self.roster_positions:
+            return "SUPER_FLEX" in self.roster_positions
+        return False

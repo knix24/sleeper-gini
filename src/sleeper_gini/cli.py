@@ -10,17 +10,17 @@ from rich.table import Table
 
 from .api.fantasycalc import FantasyCalcClient
 from .api.sleeper import SleeperClient
-from .models import LeagueBalance, Player, ValuedRoster
+from .models import LeagueBalance, Player, SleeperLeague, ValuedRoster
 from .services.cache import Cache
 from .services.gini import calculate_gini, calculate_stats, interpret_gini
 from .services.matcher import PlayerMatcher
 
 
-def select_league(console: Console) -> tuple[str, int]:
+def select_league(console: Console) -> SleeperLeague:
     """Interactively select a league by prompting for username.
 
     Returns:
-        Tuple of (league_id, total_rosters)
+        Selected SleeperLeague object
     """
     username = Prompt.ask("[cyan]Enter your Sleeper username[/cyan]")
 
@@ -68,26 +68,19 @@ def select_league(console: Console) -> tuple[str, int]:
         try:
             idx = int(choice) - 1
             if 0 <= idx < len(leagues):
-                selected = leagues[idx]
-                return selected.league_id, selected.total_rosters
+                return leagues[idx]
             console.print(f"[red]Please enter a number between 1 and {len(leagues)}[/red]")
         except ValueError:
             console.print("[red]Please enter a valid number[/red]")
 
 
-def analyze_league(
-    league_id: str,
-    num_qbs: int = 1,
-    num_teams: int = 12,
-    ppr: float = 1.0,
-) -> LeagueBalance:
+def analyze_league(league_id: str) -> LeagueBalance:
     """Analyze competitive balance for a Sleeper league.
+
+    Scoring settings (PPR, superflex) are auto-detected from the league.
 
     Args:
         league_id: Sleeper league ID
-        num_qbs: 1 for 1QB, 2 for superflex
-        num_teams: League size for valuation context
-        ppr: PPR scoring (0, 0.5, 1)
 
     Returns:
         LeagueBalance object with full analysis
@@ -103,9 +96,9 @@ def analyze_league(
 
         fc_values = fantasycalc.get_values(
             is_dynasty=True,
-            num_qbs=num_qbs,
-            num_teams=num_teams,
-            ppr=ppr,
+            num_qbs=2 if league.is_superflex else 1,
+            num_teams=league.total_rosters,
+            ppr=league.ppr,
         )
 
         matcher = PlayerMatcher()
@@ -200,61 +193,29 @@ def print_report(result: LeagueBalance, console: Console) -> None:
 @click.command()
 @click.argument("league_id", required=False)
 @click.option(
-    "--superflex",
-    is_flag=True,
-    help="Use superflex (2QB) values instead of 1QB",
-)
-@click.option(
     "--json",
     "as_json",
     is_flag=True,
     help="Output as JSON instead of formatted table",
 )
-@click.option(
-    "--teams",
-    default=None,
-    type=int,
-    help="League size for valuation context (auto-detected if not specified)",
-)
-@click.option(
-    "--ppr",
-    default=1.0,
-    type=float,
-    help="PPR scoring: 0, 0.5, or 1 (default: 1)",
-)
-def main(
-    league_id: str | None,
-    superflex: bool,
-    as_json: bool,
-    teams: int | None,
-    ppr: float,
-) -> None:
+def main(league_id: str | None, as_json: bool) -> None:
     """Analyze competitive balance for a Sleeper dynasty league.
 
     If LEAGUE_ID is not provided, prompts for your Sleeper username
     and lets you select from your leagues.
+
+    Scoring settings (PPR, superflex) are auto-detected from the league.
     """
     console = Console(stderr=True)
 
     try:
-        # Interactive mode if no league_id provided
         if not league_id:
-            league_id, detected_teams = select_league(console)
-            if teams is None:
-                teams = detected_teams
+            league = select_league(console)
+            league_id = league.league_id
             console.print()
 
-        # Default to 12 teams if still not set
-        if teams is None:
-            teams = 12
-
         with console.status("Analyzing league..."):
-            result = analyze_league(
-                league_id=league_id,
-                num_qbs=2 if superflex else 1,
-                num_teams=teams,
-                ppr=ppr,
-            )
+            result = analyze_league(league_id)
 
         if as_json:
             print(json.dumps(result.model_dump(), indent=2))

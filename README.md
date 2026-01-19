@@ -67,15 +67,11 @@ source .venv/bin/activate
 # Direct mode - specify league ID directly
 ./sleeper-gini <league_id>
 
-# Superflex league
-./sleeper-gini --superflex
-
 # JSON output (for piping to other tools)
 ./sleeper-gini --json
-
-# Custom scoring settings
-./sleeper-gini --ppr 0.5
 ```
+
+Scoring settings (PPR, superflex) are auto-detected from the league.
 
 ## Gini Coefficient Interpretation
 
